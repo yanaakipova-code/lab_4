@@ -54,3 +54,63 @@ TEST_CASE("Cardinal: IsFinalNumber и IsInfiniteNumber") {
     REQUIRE(infinite.IsFinalNumber() == false);
     REQUIRE(infinite.IsInfiniteNumber() == true);
 }
+
+TEST_CASE("Cardinal: оператор == ") {
+    SECTION("два конечных равны") {
+        Cardinal a(42);
+        Cardinal b(42);
+        REQUIRE(a == b);
+    }
+    
+    SECTION("два конечных не равны") {
+        Cardinal a(5);
+        Cardinal b(10);
+        REQUIRE_FALSE(a == b);
+    }
+    
+    SECTION("две бесконечности") {
+        Cardinal w1 = Cardinal::Omega();
+        Cardinal w2 = Cardinal::Omega();
+        REQUIRE(w1 == w2);
+    }
+    
+    SECTION("конечное и бесконечное") {
+        Cardinal finite(5);
+        Cardinal omega = Cardinal::Omega();
+        REQUIRE_FALSE(finite == omega);
+        REQUIRE_FALSE(omega == finite);
+    }
+}
+
+TEST_CASE("Cardinal: оператор <") {
+    SECTION("5 < 10") {
+        Cardinal a(5);
+        Cardinal b(10);
+        REQUIRE(a < b);
+        REQUIRE_FALSE(b < a);
+    }
+    
+    SECTION("5 < 5") {
+        Cardinal a(5);
+        Cardinal b(5);
+        REQUIRE_FALSE(a < b);
+    }
+    
+    SECTION("5 < бесконечность") {
+        Cardinal finite(5);
+        Cardinal omega = Cardinal::Omega();
+        REQUIRE(finite < omega);
+    }
+    
+    SECTION("бесконечность < 5") {
+        Cardinal finite(5);
+        Cardinal omega = Cardinal::Omega();
+        REQUIRE_FALSE(omega < finite);
+    }
+    
+    SECTION("бесконечность < бесконечность") {
+        Cardinal w1 = Cardinal::Omega();
+        Cardinal w2 = Cardinal::Omega();
+        REQUIRE_FALSE(w1 < w2);
+    }
+}

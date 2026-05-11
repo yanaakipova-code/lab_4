@@ -30,4 +30,21 @@ public:
         }
         return finite;
     }
+
+    bool operator==(const Cardinal& other) const{
+        if(is_omega && other.is_omega) return true;
+        if(is_omega || other.is_omega) return false;
+        return finite == other.finite;
+    }
+    
+    bool operator!=(const Cardinal& other) const{
+        return !(*this == other);
+    }
+
+    bool operator<(const Cardinal& other) const{
+        if (is_omega) return false;
+         if (other.is_omega) return true;
+        return finite < other.finite;
+    }
+
 };
