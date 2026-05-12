@@ -1,6 +1,6 @@
 #pragma once
 #include <cstddef>
-#include <Error.hpp>
+#include "lab2-3/Error.hpp"
 class Cardinal {
 private:
     size_t finite = 0;
@@ -26,7 +26,7 @@ public:
     }
     size_t GetSize() const {
         if (is_omega) {
-            throw IsInfiniteLengthException("Cardinal.hpp");
+            throw IsInfiniteLengthException("Длина равна бесконечности");
         }
         return finite;
     }
