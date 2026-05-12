@@ -142,3 +142,54 @@ TEST_CASE("SequenceGenerator: HasNext для пустой последовате
     REQUIRE(gen.HasNext() == false);
     REQUIRE(gen.HasNext() == false);
 }
+
+TEST_CASE("SequenceGenerator: Append добавляет элемент в конец") {
+    ArraySequence<int> seq = {1, 2, 3};
+    SequenceGenerator<int, ArraySequence> gen(seq);
+    
+    auto new_gen = gen.Append(4);
+    
+    REQUIRE(gen.GetNext() == 1);
+    REQUIRE(gen.GetNext() == 2);
+    REQUIRE(gen.GetNext() == 3);
+    REQUIRE(gen.HasNext() == false);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 3);
+    REQUIRE(new_gen.GetNext() == 4);
+    REQUIRE(new_gen.HasNext() == false);
+}
+
+TEST_CASE("SequenceGenerator: Append к пустой последовательности") {
+    ArraySequence<int> seq;
+    SequenceGenerator<int, ArraySequence> gen(seq);
+    
+    auto newGen = gen.Append(42);
+    
+    REQUIRE(gen.HasNext() == false);
+    
+    REQUIRE(newGen.HasNext() == true);
+    REQUIRE(newGen.GetNext() == 42);
+    REQUIRE(newGen.HasNext() == false);
+}
+
+TEST_CASE("SequenceGenerator: несколько Append подряд") {
+    ArraySequence<int> seq = {1};
+    SequenceGenerator<int, ArraySequence> gen(seq);
+    
+    auto gen2 = gen.Append(2);
+    auto gen3 = gen2.Append(3);
+    auto gen4 = gen3.Append(4);
+    
+    REQUIRE(gen4.GetNext() == 1);
+    REQUIRE(gen4.GetNext() == 2);
+    REQUIRE(gen4.GetNext() == 3);
+    REQUIRE(gen4.GetNext() == 4);
+    REQUIRE(gen4.HasNext() == false);
+    
+    REQUIRE(gen3.GetNext() == 1);
+    REQUIRE(gen3.GetNext() == 2);
+    REQUIRE(gen3.GetNext() == 3);
+    REQUIRE(gen3.HasNext() == false);
+}

@@ -10,10 +10,13 @@ private:
 public:
     SequenceGenerator();
     SequenceGenerator(const Container<T>& data);
+
     size_t GetSize() const; //m_position;
     Cardinal GetPotentialSize() const override; //m_data.GetLeght()    
     T GetNext() override;
     bool HasNext() const;
+
+    SequenceGenerator<T, Container> Append(T item) const;
 
 };
 

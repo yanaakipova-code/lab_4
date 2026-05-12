@@ -34,4 +34,11 @@ bool SequenceGenerator<T, Container>::HasNext() const{
     return GetSize() < GetPotentialSize().GetSize();
 }
 
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> SequenceGenerator<T, Container>::Append(T item) const{
+    Container<T> new_data = m_data;
+    new_data.Append(item);
+    return SequenceGenerator<T, Container>(new_data);
+}
+
 
