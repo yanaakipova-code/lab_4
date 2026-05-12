@@ -358,3 +358,82 @@ TEST_CASE("RecurrentGenerator: Append последовательности к п
     REQUIRE(new_gen.GetNext() == 25);
     REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
 }
+
+TEST_CASE("RecurrentGenerator: Insert одного элемента в начало последовательности из контейнера") {
+    ArraySequence<int> data = {10, 20, 30};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Insert(5);
+    
+    REQUIRE(gen.GetNext() == 10);
+    REQUIRE(gen.GetNext() == 20);
+    REQUIRE(gen.GetNext() == 30);
+    REQUIRE(gen.HasNext() == false);
+    
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 20);
+    REQUIRE(new_gen.GetNext() == 30);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Insert последовательности в начало последовательности из контейнера") {
+    ArraySequence<int> data = {30, 40, 50};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    ArraySequence<int> to_insert = {10, 20};
+    auto new_gen = gen.Insert(&to_insert);
+    
+    REQUIRE(new_gen.GetNext() == 20);
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 30);
+    REQUIRE(new_gen.GetNext() == 40);
+    REQUIRE(new_gen.GetNext() == 50);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Insert пустой последовательности") {
+    ArraySequence<int> data = {1, 2, 3};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    ArraySequence<int> empty;
+    auto new_gen = gen.Insert(&empty);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 3);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Insert с типом string") {
+    ArraySequence<std::string> data = {"b", "c"};
+    RecurrentGenerator<std::string, ArraySequence> gen(data);
+    
+    ArraySequence<std::string> to_insert = {"x", "y", "z"};
+    auto new_gen = gen.Insert(&to_insert);
+    
+    REQUIRE(new_gen.GetNext() == "z");
+    REQUIRE(new_gen.GetNext() == "y");
+    REQUIRE(new_gen.GetNext() == "x");
+    REQUIRE(new_gen.GetNext() == "b");
+    REQUIRE(new_gen.GetNext() == "c");
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Insert не изменяет оригинальный генератор") {
+    ArraySequence<int> data = {5, 10, 15};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Insert(1);
+    
+    REQUIRE(gen.GetNext() == 5);
+    REQUIRE(gen.GetNext() == 10);
+    REQUIRE(gen.GetNext() == 15);
+    REQUIRE(gen.HasNext() == false);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 15);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}

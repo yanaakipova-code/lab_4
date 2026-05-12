@@ -75,3 +75,20 @@ SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Append(Contain
     
     return SequenceGenerator<T, Container>(new_cache);
 }
+
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Insert(T item) const{
+    Container<T> new_cache = m_cache;
+
+    new_cache.Prepend(item);
+    return SequenceGenerator<T, Container>(new_cache);
+}
+
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Insert(Container<T>* items) const{
+    Container<T> new_cache = m_cache;
+    for( auto& i : *items){
+        new_cache.Prepend(i);
+    }
+    return SequenceGenerator<T, Container>(new_cache);
+}
