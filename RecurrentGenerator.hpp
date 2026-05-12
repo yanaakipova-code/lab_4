@@ -27,6 +27,9 @@ public:
 
     SequenceGenerator<T, Container> Insert (T item) const;
     SequenceGenerator<T, Container> Insert (Container<T>* items) const;
+
+    SequenceGenerator<T, Container> Remove (T item) const;
+    SequenceGenerator<T, Container> Remove (Container<T>* items) const;
 };
 
 #include "RecurrentGenerator.tpp"

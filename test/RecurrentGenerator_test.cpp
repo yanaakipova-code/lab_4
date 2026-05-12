@@ -437,3 +437,70 @@ TEST_CASE("RecurrentGenerator: Insert не изменяет оригинальн
     REQUIRE(new_gen.GetNext() == 15);
     REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
 }
+TEST_CASE("RecurrentGenerator: Remove одного элемента из контейнера") {
+    ArraySequence<int> data = {1, 2, 3, 4, 5};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Remove(3);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 4);
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Remove элемента в начале") {
+    ArraySequence<int> data = {10, 20, 30};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Remove(10);
+    
+    REQUIRE(new_gen.GetNext() == 20);
+    REQUIRE(new_gen.GetNext() == 30);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Remove элемента в конце") {
+    ArraySequence<int> data = {5, 10, 15};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Remove(15);
+    
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Remove с дубликатами - удаляет только первый") {
+    ArraySequence<int> data = {1, 2, 3, 2, 4, 2, 5};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Remove(2);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 3);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 4);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Remove не изменяет оригинал") {
+    ArraySequence<int> data = {10, 20, 30, 40};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Remove(20);
+    
+    REQUIRE(gen.GetNext() == 10);
+    REQUIRE(gen.GetNext() == 20);
+    REQUIRE(gen.GetNext() == 30);
+    REQUIRE(gen.GetNext() == 40);
+    REQUIRE(gen.HasNext() == false);
+    
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 30);
+    REQUIRE(new_gen.GetNext() == 40);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}

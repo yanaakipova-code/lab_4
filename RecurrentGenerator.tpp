@@ -92,3 +92,45 @@ SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Insert(Contain
     }
     return SequenceGenerator<T, Container>(new_cache);
 }
+
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Remove(T item) const {
+    Container<T> new_cache;
+    bool removed = false;
+    
+    for (size_t i = 0; i < GetCacheSize(); i++) {
+        if (!removed && m_cache[i] == item) {
+            removed = true;
+        } else {
+            new_cache.Append(m_cache[i]);
+        }
+    }
+    
+    if (!removed) {
+        throw OutOfRangeException("Элемент не найден");
+    }
+    
+    return SequenceGenerator<T, Container>(new_cache);
+}
+
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Remove(Container<T>* items) const {
+    Container<T> current = m_cache;
+    
+    for (size_t j = 0; j < items->GetLength(); j++) {
+        T item = items->Get(j);
+        Container<T> temp;
+        bool removed = false;
+        
+        for (size_t i = 0; i < current.GetLength(); i++) {
+            if (!removed && current[i] == item) {
+                removed = true;
+            } else {
+                temp.Append(current[i]);
+            }
+        }
+        current = temp;
+    }
+    
+    return SequenceGenerator<T, Container>(current);
+}
