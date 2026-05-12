@@ -15,7 +15,7 @@ public:
     size_t GetSize() const; //m_position;
     Cardinal GetPotentialSize() const override; //m_data.GetLeght()    
     T GetNext() override;
-    bool HasNext() const;
+    bool HasNext() const override;
 
     SequenceGenerator<T, Container> Append(T item) const;
     SequenceGenerator<T, Container> Append (Container<T>* items) const;
