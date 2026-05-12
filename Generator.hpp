@@ -1,3 +1,4 @@
+#pragma once
 #include "Cardinal.hpp"
 #include "lab2-3/Option.hpp"
 
