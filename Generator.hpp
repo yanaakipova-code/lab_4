@@ -1,19 +1,17 @@
+#include "Cardinal.hpp"
+#include "lab2-3/Option.hpp"
+
 template<typename T>
-class Cenerator{
+class Generator {
 public:
-    virtual ~Generator();
+    virtual ~Generator() = default;
     virtual T GetNext() = 0;
     virtual bool HasNext() const = 0;
-    virtual Optional<T> TryGetNext(){
+    virtual Cardinal GetPotentialSize() const = 0; //либо бесконечность, либо число
+    virtual Option<T> TryGetNext(){
         if (HasNext()){
-            return Optional<T>(GetNext());
+            return Option<T>(GetNext());
         }
-        return Optional<T>();
+        return Option<T>();
     }
-    virtual Generator <T>* Append(T item) const = 0;
-    virtual Generator <T>* Append (Sequnce<T>* items) const = 0;
-    virtual Generator <T>* Insert (T item) const = 0;
-    virtual Generator <T>* Insert (Sequnce<T>* items) const = 0;
-    virtual Generator <T>* Remove (T item) const = 0;
-    virtual Generator <T>* Remove (Sequnce<T>* items) const = 0;
 };
