@@ -10,6 +10,7 @@ private:
 public:
     SequenceGenerator();
     SequenceGenerator(const Container<T>& data);
+    SequenceGenerator(const SequenceGenerator<T, Container>& other);
 
     size_t GetSize() const; //m_position;
     Cardinal GetPotentialSize() const override; //m_data.GetLeght()    
@@ -22,6 +23,10 @@ public:
     SequenceGenerator<T, Container> Insert (T item) const;
     SequenceGenerator<T, Container> Insert (Container<T>* items) const;
 
+    SequenceGenerator<T, Container> Remove (T item) const;
+    SequenceGenerator<T, Container> Remove (Container<T>* items) const;
+
+    SequenceGenerator<T, Container>& operator=(const SequenceGenerator<T, Container>& other);
 
 };
 

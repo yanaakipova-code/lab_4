@@ -320,3 +320,27 @@ TEST_CASE("SequenceGenerator: Insert не изменяет оригинальн�
     REQUIRE(new_gen.GetNext() == 3);
     REQUIRE(new_gen.HasNext() == false);
 }
+
+
+TEST_CASE("SequenceGenerator: Remove удаляет первый найденный элемент") {
+    ArraySequence<int> original = {1, 2, 3, 2, 4, 5};
+    SequenceGenerator<int, ArraySequence> gen(original);
+    
+    auto new_gen = gen.Remove(2);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 3);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 4);
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE(new_gen.HasNext() == false);
+}
+
+TEST_CASE("SequenceGenerator: Remove элемента из последовательности с одним элементом") {
+    ArraySequence<int> original = {42};
+    SequenceGenerator<int, ArraySequence> gen(original);
+    
+    auto new_gen = gen.Remove(42);
+    
+    REQUIRE(new_gen.HasNext() == false);
+}
