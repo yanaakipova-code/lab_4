@@ -1,6 +1,5 @@
 #include "catch.hpp"
 #include "../RecurrentGenerator.hpp"
-#include "../Cardinal.hpp"
 #include "lab2-3/ArraySequence.hpp"
 #include <functional>
 
@@ -282,4 +281,80 @@ TEST_CASE("RecurrentGenerator: GetSize и GetCacheSize для функции") {
     gen.GetNext();
     REQUIRE(gen.GetSize() == 3);
     REQUIRE(gen.GetCacheSize() == 3);
+}
+
+
+TEST_CASE("RecurrentGenerator: Append одного элемента к последовательности из контейнера") {
+    ArraySequence<int> data = {10, 20, 30};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    auto new_gen = gen.Append(40);
+    
+    REQUIRE(gen.GetNext() == 10);
+    REQUIRE(gen.GetNext() == 20);
+    REQUIRE(gen.GetNext() == 30);
+    REQUIRE(gen.HasNext() == false);
+    
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 20);
+    REQUIRE(new_gen.GetNext() == 30);
+    REQUIRE(new_gen.GetNext() == 40);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Append к пустой рекуррентной последовательности") {
+    auto func = [](const ArraySequence<int>& cache) -> int {
+        return 1;
+    };
+    ArraySequence<int> seed;
+    RecurrentGenerator<int, ArraySequence> gen(func, seed);
+    
+    auto new_gen = gen.Append(42);
+    
+    REQUIRE(new_gen.GetNext() == 42);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Append пустой последовательности") {
+    ArraySequence<int> data = {1, 2, 3};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    ArraySequence<int> empty;
+    auto new_gen = gen.Append(&empty);
+    
+    REQUIRE(new_gen.GetNext() == 1);
+    REQUIRE(new_gen.GetNext() == 2);
+    REQUIRE(new_gen.GetNext() == 3);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Append последовательности к пустой рекуррентной") {
+    auto func = [](const ArraySequence<int>& cache) -> int {
+        return cache.GetLength();
+    };
+    ArraySequence<int> seq;
+    RecurrentGenerator<int, ArraySequence> gen(func, seq);
+    
+    ArraySequence<int> to_append = {10, 20, 30};
+    auto new_gen = gen.Append(&to_append);
+    
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 20);
+    REQUIRE(new_gen.GetNext() == 30);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
+}
+
+TEST_CASE("RecurrentGenerator: Append последовательности к последовательности из контейнера") {
+    ArraySequence<int> data = {5, 10, 15};
+    RecurrentGenerator<int, ArraySequence> gen(data);
+    
+    ArraySequence<int> to_append = {20, 25};
+    auto new_gen = gen.Append(&to_append);
+    
+    REQUIRE(new_gen.GetNext() == 5);
+    REQUIRE(new_gen.GetNext() == 10);
+    REQUIRE(new_gen.GetNext() == 15);
+    REQUIRE(new_gen.GetNext() == 20);
+    REQUIRE(new_gen.GetNext() == 25);
+    REQUIRE_THROWS_AS(new_gen.GetNext(), OutOfRangeException);
 }

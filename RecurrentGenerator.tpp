@@ -11,6 +11,9 @@ template<typename T, template<typename> class Container>
 RecurrentGenerator<T, Container>::RecurrentGenerator(std::function<T(const Container<T>&)> func): m_func{func}, m_cache{}, m_position{0} {}
 
 template<typename T, template<typename> class Container>
+RecurrentGenerator<T, Container>::RecurrentGenerator(std::function<T(const Container<T>&)> func, const Container<T>& other): m_func{func}, m_cache{other}, m_position{0} {}
+
+template<typename T, template<typename> class Container>
 size_t RecurrentGenerator<T, Container>::GetSize() const{
     return m_position;
 }
@@ -52,4 +55,23 @@ T RecurrentGenerator<T, Container>::GetNext() {
     m_cache.Append(next);
     m_position++;
     return next;
+}
+
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Append(T item) const{
+    Container<T> new_cache = m_cache;
+    new_cache.Append(item);
+
+    return SequenceGenerator<T, Container>(new_cache);
+}
+
+template<typename T, template<typename> class Container>
+SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Append(Container<T>* items) const {
+    Container<T> new_cache = m_cache;
+    
+    for (auto& i: *items) {
+        new_cache.Append(i);
+    }
+    
+    return SequenceGenerator<T, Container>(new_cache);
 }

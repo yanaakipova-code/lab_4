@@ -1,6 +1,7 @@
 #pragma once
 #include "Cardinal.hpp"
 #include "Generator.hpp"
+#include "SequenceGenerator.hpp"
 
 template<typename T, template<typename> class Container>
 class RecurrentGenerator: public Generator<T> {
@@ -12,6 +13,7 @@ public:
     RecurrentGenerator();
     RecurrentGenerator(const Container<T>& other);
     RecurrentGenerator(std::function<T(const Container<T>&)> func);
+    RecurrentGenerator(std::function<T(const Container<T>&)> func, const Container<T>& other);
 
     size_t GetSize() const;
     Cardinal GetPotentialSize() const override;
@@ -19,6 +21,9 @@ public:
 
     T GetNext() override;
     bool HasNext() const override;
+
+    SequenceGenerator<T, Container> Append(T item) const;
+    SequenceGenerator<T, Container> Append(Container<T>* items) const;
 };
 
 #include "RecurrentGenerator.tpp"
