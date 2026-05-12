@@ -17,6 +17,11 @@ public:
     bool HasNext() const;
 
     SequenceGenerator<T, Container> Append(T item) const;
+    SequenceGenerator<T, Container> Append (Container<T>* items) const;
+
+    SequenceGenerator<T, Container> Insert (T item) const;
+    SequenceGenerator<T, Container> Insert (Container<T>* items) const;
+
 
 };
 
