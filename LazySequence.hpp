@@ -22,6 +22,8 @@ public:
 
     T GetFirst();
     T GetLast();
+
+    LazySequence<T, Container>* GetSubsequence(size_t start_index, size_t end_index);
 };
 
 #include "LazySequence.tpp"

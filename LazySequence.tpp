@@ -69,3 +69,25 @@ T LazySequence<T, Container>::GetLast() {
     }
     return m_cache[last_index];
 }
+
+template<typename T, template<typename> class Container>
+LazySequence<T, Container>* LazySequence<T, Container>::GetSubsequence(size_t start_index, size_t end_index){
+    if (start_index > end_index) {
+        throw InvalidArgumentException("start_index не может быть больше end_index");
+    }
+    Cardinal size = GetSizeSequence();
+    if (!size.IsInfiniteNumber() && end_index >= size.GetSize()) {
+        throw InvalidArgumentException("end_index выходит за пределы последовательности");
+    }
+    Container<T> new_cache;
+    for(size_t i = GetSizeCache(); i < end_index; i++){
+        if(!m_generator || !m_generator->HasNext()){
+            throw InvalidArgumentException("столько элементов невозможно инициализировать");
+        }
+        m_cache.Append(m_generator->GetNext());
+    }
+    for(size_t i = start_index; i <= end_index; i++){
+        new_cache.Append(m_cache[i]);
+    }
+    return new LazySequence<T, Container>(new_cache);
+}

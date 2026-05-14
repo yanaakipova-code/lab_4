@@ -211,3 +211,99 @@ TEST_CASE("LazySequence: GetLast несколько раз возвращает 
     REQUIRE(seq.GetLast() == 5);
     REQUIRE(seq.GetLast() == 5);
 }
+
+TEST_CASE("LazySequence: GetSubsequence возвращает правильную подпоследовательность из контейнера") {
+    ArraySequence<int> data = {10, 20, 30, 40, 50, 60, 70};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto* subseq = seq.GetSubsequence(2, 5);
+    
+    REQUIRE(subseq->GetSizeCache() == 4);
+    REQUIRE(subseq->GetFirst() == 30);
+    REQUIRE(subseq->GetLast() == 60);
+    
+    delete subseq;
+}
+
+TEST_CASE("LazySequence: GetSubsequence с start_index = 0") {
+    ArraySequence<int> data = {1, 2, 3, 4, 5};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto* subseq = seq.GetSubsequence(0, 3);
+    
+    REQUIRE(subseq->GetSizeCache() == 4);
+    REQUIRE(subseq->GetFirst() == 1);
+    REQUIRE(subseq->GetLast() == 4);
+    
+    delete subseq;
+}
+
+TEST_CASE("LazySequence: GetSubsequence до последнего элемента") {
+    ArraySequence<int> data = {5, 10, 15, 20, 25};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto* subseq = seq.GetSubsequence(1, 4);
+    
+    REQUIRE(subseq->GetSizeCache() == 4);
+    REQUIRE(subseq->GetFirst() == 10);
+    REQUIRE(subseq->GetLast() == 25);
+    
+    delete subseq;
+}
+
+TEST_CASE("LazySequence: GetSubsequence из одного элемента") {
+    ArraySequence<int> data = {100, 200, 300, 400};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto* subseq = seq.GetSubsequence(2, 2);
+    
+    REQUIRE(subseq->GetSizeCache() == 1);
+    REQUIRE(subseq->GetFirst() == 300);
+    
+    delete subseq;
+}
+
+TEST_CASE("LazySequence: GetSubsequence с start_index > end_index") {
+    ArraySequence<int> data = {1, 2, 3, 4, 5};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE_THROWS_AS(seq.GetSubsequence(3, 1), InvalidArgumentException);
+}
+
+TEST_CASE("LazySequence: GetSubsequence с end_index за пределами") {
+    ArraySequence<int> data = {1, 2, 3};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE_THROWS_AS(seq.GetSubsequence(0, 5), InvalidArgumentException);
+}
+// ========== 9. Тест GetSubsequence с типом double ==========
+TEST_CASE("LazySequence: GetSubsequence с типом double") {
+    ArraySequence<double> data = {1.5, 2.5, 3.5, 4.5, 5.5, 6.5};
+    LazySequence<double, ArraySequence> seq(data);
+    
+    auto* subseq = seq.GetSubsequence(2, 4);
+    
+    REQUIRE(subseq->GetSizeCache() == 3);
+    REQUIRE(subseq->GetFirst() == Approx(3.5));
+    REQUIRE(subseq->GetLast() == Approx(5.5));
+    
+    delete subseq;
+}
+
+TEST_CASE("LazySequence: GetSubsequence для пустого контейнера") {
+    ArraySequence<int> data;
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE_THROWS_AS(seq.GetSubsequence(0, 0), InvalidArgumentException);
+}
+TEST_CASE("LazySequence: GetSubsequence с start_index == end_index") {
+    ArraySequence<int> data = {10, 20, 30, 40, 50};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto* subseq = seq.GetSubsequence(3, 3);
+    
+    REQUIRE(subseq->GetSizeCache() == 1);
+    REQUIRE(subseq->GetFirst() == 40);
+    
+    delete subseq;
+}
