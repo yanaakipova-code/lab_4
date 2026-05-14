@@ -91,3 +91,29 @@ LazySequence<T, Container>* LazySequence<T, Container>::GetSubsequence(size_t st
     }
     return new LazySequence<T, Container>(new_cache);
 }
+
+template<typename T, template<typename> class Container>
+LazySequence<T, Container> LazySequence<T, Container>::Append(T item) const{
+    Container<T> new_cache = m_cache;
+    new_cache.Append(item);
+    
+    std::unique_ptr<Generator<T>> new_generator;
+    if (m_generator) {
+        new_generator = std::unique_ptr<Generator<T>>(m_generator->Clone());
+    }
+    
+    return LazySequence<T, Container>(new_cache,std::move(new_generator));
+}
+
+template<typename T, template<typename> class Container>
+LazySequence<T, Container> LazySequence<T, Container>::Prepend(T item) const{
+    Container<T> new_cache = m_cache;
+    new_cache.Prepend(item);
+    
+    std::unique_ptr<Generator<T>> new_generator;
+    if (m_generator) {
+        new_generator = std::unique_ptr<Generator<T>>(m_generator->Clone());
+    }
+    
+    return LazySequence<T, Container>(new_cache,std::move(new_generator));
+}

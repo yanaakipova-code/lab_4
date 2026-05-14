@@ -307,3 +307,129 @@ TEST_CASE("LazySequence: GetSubsequence с start_index == end_index") {
     
     delete subseq;
 }
+
+TEST_CASE("LazySequence: Добавление элемента в конец последовательности из контейнера") {
+    ArraySequence<int> data = {1, 2, 3};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Append(4);
+    
+    REQUIRE(new_seq.GetSizeCache() == 4);
+    REQUIRE(new_seq.GetFirst() == 1);
+    REQUIRE(new_seq.GetLast() == 4);
+}
+
+TEST_CASE("LazySequence: Добавление элемента в конец пустой последовательности") {
+    ArraySequence<int> data;
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Append(42);
+    
+    REQUIRE(new_seq.GetSizeCache() == 1);
+    REQUIRE(new_seq.GetFirst() == 42);
+    REQUIRE(new_seq.GetLast() == 42);
+}
+
+TEST_CASE("LazySequence: Многократное добавление в конец") {
+    ArraySequence<int> data = {1, 2};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto seq2 = seq.Append(3);
+    auto seq3 = seq2.Append(4);
+    auto seq4 = seq3.Append(5);
+    
+    REQUIRE(seq4.GetSizeCache() == 5);
+    REQUIRE(seq4.GetFirst() == 1);
+    REQUIRE(seq4.GetLast() == 5);
+}
+
+TEST_CASE("LazySequence: Добавление элемента в начало последовательности из контейнера") {
+    ArraySequence<int> data = {2, 3, 4};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Prepend(1);
+    
+    REQUIRE(new_seq.GetSizeCache() == 4);
+    REQUIRE(new_seq.GetFirst() == 1);
+    REQUIRE(new_seq.GetLast() == 4);
+}
+
+TEST_CASE("LazySequence: Добавление элемента в начало пустой последовательности") {
+    ArraySequence<int> data;
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Prepend(42);
+    
+    REQUIRE(new_seq.GetSizeCache() == 1);
+    REQUIRE(new_seq.GetFirst() == 42);
+    REQUIRE(new_seq.GetLast() == 42);
+}
+
+TEST_CASE("LazySequence: Многократное добавление в начало") {
+    ArraySequence<int> data = {3, 4};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto seq2 = seq.Prepend(2);
+    auto seq3 = seq2.Prepend(1);
+    auto seq4 = seq3.Prepend(0);
+    
+    REQUIRE(seq4.GetSizeCache() == 5);
+    REQUIRE(seq4.GetFirst() == 0);
+    REQUIRE(seq4.GetLast() == 4);
+}
+
+TEST_CASE("LazySequence: Добавление в конец и в начало вместе") {
+    ArraySequence<int> data = {20, 30};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto seq2 = seq.Prepend(10);
+    auto seq3 = seq2.Append(40);
+    
+    REQUIRE(seq3.GetSizeCache() == 4);
+    REQUIRE(seq3.GetFirst() == 10);
+    REQUIRE(seq3.GetLast() == 40);
+}
+
+TEST_CASE("LazySequence: Добавление в конец с типом double") {
+    ArraySequence<double> data = {1.5, 2.5};
+    LazySequence<double, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Append(3.5);
+    
+    REQUIRE(new_seq.GetSizeCache() == 3);
+    REQUIRE(new_seq.GetFirst() == Approx(1.5));
+    REQUIRE(new_seq.GetLast() == Approx(3.5));
+}
+
+TEST_CASE("LazySequence: Добавление в начало с типом double") {
+    ArraySequence<double> data = {2.5, 3.5};
+    LazySequence<double, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Prepend(1.5);
+    
+    REQUIRE(new_seq.GetSizeCache() == 3);
+    REQUIRE(new_seq.GetFirst() == Approx(1.5));
+    REQUIRE(new_seq.GetLast() == Approx(3.5));
+}
+
+TEST_CASE("LazySequence: Добавление в конец с типом string") {
+    ArraySequence<std::string> data = {"b", "c"};
+    LazySequence<std::string, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Append("d");
+    
+    REQUIRE(new_seq.GetSizeCache() == 3);
+    REQUIRE(new_seq.GetFirst() == "b");
+    REQUIRE(new_seq.GetLast() == "d");
+}
+
+TEST_CASE("LazySequence: Добавление в начало с типом string") {
+    ArraySequence<std::string> data = {"b", "c"};
+    LazySequence<std::string, ArraySequence> seq(data);
+    
+    auto new_seq = seq.Prepend("a");
+    
+    REQUIRE(new_seq.GetSizeCache() == 3);
+    REQUIRE(new_seq.GetFirst() == "a");
+    REQUIRE(new_seq.GetLast() == "c");
+}

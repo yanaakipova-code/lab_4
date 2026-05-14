@@ -22,8 +22,10 @@ public:
 
     T GetFirst();
     T GetLast();
-
     LazySequence<T, Container>* GetSubsequence(size_t start_index, size_t end_index);
+
+    LazySequence<T, Container> Append(T item) const;
+    LazySequence<T, Container> Prepend(T item) const;
 };
 
 #include "LazySequence.tpp"
