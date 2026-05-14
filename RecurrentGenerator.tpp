@@ -134,3 +134,10 @@ SequenceGenerator<T, Container> RecurrentGenerator<T, Container>::Remove(Contain
     
     return SequenceGenerator<T, Container>(current);
 }
+
+template<typename T, template<typename> class Container>
+Generator<T>* RecurrentGenerator<T, Container>::Clone() const {
+    RecurrentGenerator<T, Container>* copy = new RecurrentGenerator<T, Container>(m_func, m_cache);
+    copy->m_position = m_position;
+    return copy;
+}

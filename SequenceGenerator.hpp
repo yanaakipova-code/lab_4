@@ -28,6 +28,8 @@ public:
 
     SequenceGenerator<T, Container>& operator=(const SequenceGenerator<T, Container>& other);
 
+    Generator<T>* Clone() const override;
+
 };
 
 #include "SequenceGenerator.tpp"

@@ -109,3 +109,9 @@ SequenceGenerator<T, Container>& SequenceGenerator<T, Container>::operator=(cons
     }
     return *this;
 }
+
+template<typename T, template<typename> class Container>
+Generator<T>* SequenceGenerator<T, Container>::Clone() const {
+    SequenceGenerator<T, Container>* copy = new SequenceGenerator<T, Container>(*this);
+    return copy;
+}

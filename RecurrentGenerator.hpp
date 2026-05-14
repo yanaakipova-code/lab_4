@@ -30,6 +30,8 @@ public:
 
     SequenceGenerator<T, Container> Remove (T item) const;
     SequenceGenerator<T, Container> Remove (Container<T>* items) const;
+
+    Generator<T>* Clone() const override;
 };
 
 #include "RecurrentGenerator.tpp"
