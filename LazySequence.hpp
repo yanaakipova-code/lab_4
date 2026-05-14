@@ -19,6 +19,9 @@ public:
 
     Cardinal GetSizeSequence() const;
     size_t GetSizeCache() const;
+
+    T GetFirst();
+    T GetLast();
 };
 
 #include "LazySequence.tpp"

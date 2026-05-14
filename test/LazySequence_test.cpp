@@ -114,3 +114,100 @@ TEST_CASE("LazySequence: пустая последовательность") {
     REQUIRE(seq.GetSizeSequence().GetSize() == 0);
     REQUIRE(seq.GetSizeSequence().IsFinalNumber() == true);
 }
+
+TEST_CASE("LazySequence: GetFirst возвращает первый элемент из контейнера") {
+    ArraySequence<int> data = {10, 20, 30, 40};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetFirst() == 10);
+}
+
+TEST_CASE("LazySequence: GetFirst на пустом контейнере выбрасывает исключение") {
+    ArraySequence<int> data;
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE_THROWS_AS(seq.GetFirst(), EmptySequenceException);
+}
+
+TEST_CASE("LazySequence: GetFirst с пустым генератором выбрасывает исключение") {
+    ArraySequence<int> empty;
+    auto gen = std::make_unique<SequenceGenerator<int, ArraySequence>>(empty);
+    LazySequence<int, ArraySequence> seq(empty, std::move(gen));
+    
+    REQUIRE_THROWS_AS(seq.GetFirst(), EmptySequenceException);
+}
+
+TEST_CASE("LazySequence: GetFirst с типом double") {
+    ArraySequence<double> data = {1.5, 2.5, 3.5};
+    LazySequence<double, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetFirst() == Approx(1.5));
+}
+
+TEST_CASE("LazySequence: GetFirst с типом string") {
+    ArraySequence<std::string> data = {"hello", "world"};
+    LazySequence<std::string, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetFirst() == "hello");
+}
+
+TEST_CASE("LazySequence: GetLast возвращает последний элемент из контейнера") {
+    ArraySequence<int> data = {10, 20, 30, 40, 50};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == 50);
+}
+
+TEST_CASE("LazySequence: GetLast для последовательности из одного элемента") {
+    ArraySequence<int> data = {42};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == 42);
+}
+
+TEST_CASE("LazySequence: GetLast для последовательности из двух элементов") {
+    ArraySequence<int> data = {7, 14};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == 14);
+}
+
+TEST_CASE("LazySequence: GetLast для пустого контейнера выбрасывает исключение") {
+    ArraySequence<int> data;
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE_THROWS_AS(seq.GetLast(), OutOfRangeException);
+}
+
+TEST_CASE("LazySequence: GetLast с типом double") {
+    ArraySequence<double> data = {1.5, 2.5, 3.5, 4.5};
+    LazySequence<double, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == Approx(4.5));
+}
+
+TEST_CASE("LazySequence: GetLast с типом string") {
+    ArraySequence<std::string> data = {"a", "b", "c", "d", "e"};
+    LazySequence<std::string, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == "e");
+}
+
+TEST_CASE("LazySequence: GetLast для большой последовательности") {
+    ArraySequence<int> data;
+    for (int i = 0; i < 1000; i++) {
+        data.Append(i);
+    }
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == 999);
+}
+
+TEST_CASE("LazySequence: GetLast несколько раз возвращает один и тот же элемент") {
+    ArraySequence<int> data = {1, 2, 3, 4, 5};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE(seq.GetLast() == 5);
+    REQUIRE(seq.GetLast() == 5);
+    REQUIRE(seq.GetLast() == 5);
+}
