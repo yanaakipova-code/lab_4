@@ -276,7 +276,7 @@ TEST_CASE("LazySequence: GetSubsequence с end_index за пределами") {
     
     REQUIRE_THROWS_AS(seq.GetSubsequence(0, 5), InvalidArgumentException);
 }
-// ========== 9. Тест GetSubsequence с типом double ==========
+
 TEST_CASE("LazySequence: GetSubsequence с типом double") {
     ArraySequence<double> data = {1.5, 2.5, 3.5, 4.5, 5.5, 6.5};
     LazySequence<double, ArraySequence> seq(data);
