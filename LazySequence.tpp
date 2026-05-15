@@ -1,5 +1,6 @@
 #include "LazySequence.hpp"
-#include "RecurrentGenerator.hpp" 
+#include "RecurrentGenerator.hpp"
+#include "CompositeGenerator.hpp"
 
 template<typename T, template<typename> class Container>
 LazySequence<T, Container>::LazySequence(): m_cache{} {}
@@ -71,7 +72,7 @@ T LazySequence<T, Container>::GetLast() {
 }
 
 template<typename T, template<typename> class Container>
-T LazySequence<T, Container>::Get(size_t index){
+T LazySequence<T, Container>::Get(size_t index) const{
     if (!(GetSizeSequence().IsInfiniteNumber()) && index >= GetSizeSequence().GetSize()) {
         throw OutOfRangeException("Индекс выходит за пределы последовательности");
     }
@@ -147,4 +148,32 @@ LazySequence<T, Container> LazySequence<T, Container>::InsertAt(T item, size_t i
         new_generator = std::unique_ptr<Generator<T>>(m_generator->Clone());
     }
     return LazySequence<T, Container>(new_cache, std::move(new_generator));
+}
+
+template<typename T, template<typename> class Container>
+LazySequence<T, Container> LazySequence<T, Container>::Concat(LazySequence<T, Container>& list) const {
+    if (GetSizeSequence().IsInfiniteNumber() || list.GetSizeSequence().IsInfiniteNumber()) {
+        throw IsInfiniteLengthException("Длина равна бесконечности");
+    }
+    
+    std::unique_ptr<Generator<T>> first_gen;
+    std::unique_ptr<Generator<T>> second_gen;
+    
+    if (m_generator) {
+        first_gen = std::unique_ptr<Generator<T>>(m_generator->Clone());
+    } else {
+        first_gen = std::unique_ptr<Generator<T>>(new SequenceGenerator<T, Container>(m_cache));
+    }
+    
+    if (list.m_generator) {
+        second_gen = std::unique_ptr<Generator<T>>(list.m_generator->Clone());
+    } else {
+        second_gen = std::unique_ptr<Generator<T>>(new SequenceGenerator<T, Container>(list.m_cache));
+    }
+    auto composite = new CompositeGenerator<T>(first_gen.release(), second_gen.release());
+    
+    Container<T> new_cache;
+    Cardinal new_length = Cardinal(GetSizeSequence().GetSize() + list.GetSizeSequence().GetSize());
+    
+    return LazySequence<T, Container>(new_cache, std::unique_ptr<Generator<T>>(composite));
 }

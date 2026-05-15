@@ -463,3 +463,27 @@ TEST_CASE("LazySequence: InsertAt с неверным индексом") {
     
     REQUIRE_THROWS_AS(seq.InsertAt(100, 5), OutOfRangeException);
 }
+
+TEST_CASE("LazySequence: Concat двух конечных последовательностей") {
+    ArraySequence<int> data1 = {1, 2, 3};
+    ArraySequence<int> data2 = {4, 5, 6};
+    LazySequence<int, ArraySequence> seq1(data1);
+    LazySequence<int, ArraySequence> seq2(data2);
+    
+    auto result = seq1.Concat(seq2);
+    
+    REQUIRE(result.GetSizeSequence().GetSize() == 6);
+    REQUIRE(result.GetSizeCache() == 0);
+}
+
+TEST_CASE("LazySequence: Concat с пустой последовательностью") {
+    ArraySequence<int> data1 = {1, 2, 3};
+    ArraySequence<int> data2;
+    LazySequence<int, ArraySequence> seq1(data1);
+    LazySequence<int, ArraySequence> seq2(data2);
+    
+    auto result = seq1.Concat(seq2);
+    
+    REQUIRE(result.GetSizeSequence().GetSize() == 3);
+    REQUIRE(result.GetSizeCache() == 0);
+}
