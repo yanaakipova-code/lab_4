@@ -71,6 +71,19 @@ T LazySequence<T, Container>::GetLast() {
 }
 
 template<typename T, template<typename> class Container>
+T LazySequence<T, Container>::Get(size_t index){
+    if (!(GetSizeSequence().IsInfiniteNumber()) && index >= GetSizeSequence().GetSize()) {
+        throw OutOfRangeException("Индекс выходит за пределы последовательности");
+    }
+    if (GetSizeCache() < index){
+        throw OutOfRangeException("Этот элемент еще не инициализирован");
+    }
+
+    return m_cache[index];
+}
+
+
+template<typename T, template<typename> class Container>
 LazySequence<T, Container>* LazySequence<T, Container>::GetSubsequence(size_t start_index, size_t end_index){
     if (start_index > end_index) {
         throw InvalidArgumentException("start_index не может быть больше end_index");
@@ -116,4 +129,22 @@ LazySequence<T, Container> LazySequence<T, Container>::Prepend(T item) const{
     }
     
     return LazySequence<T, Container>(new_cache,std::move(new_generator));
+}
+
+template<typename T, template<typename> class Container>
+LazySequence<T, Container> LazySequence<T, Container>::InsertAt(T item, size_t index) const{
+    if(GetSizeSequence().IsFinalNumber() && index > GetSizeSequence().GetSize()){
+        throw OutOfRangeException("Индекс выходит за рамки последовательности");
+    }
+    Container<T> new_cache = m_cache;
+    if(GetSizeCache() < index){
+        new_cache.Append(item);
+    }else{
+        new_cache.InsertAt(item, index);
+    }
+    std::unique_ptr<Generator<T>> new_generator;
+    if (m_generator) {
+        new_generator = std::unique_ptr<Generator<T>>(m_generator->Clone());
+    }
+    return LazySequence<T, Container>(new_cache, std::move(new_generator));
 }

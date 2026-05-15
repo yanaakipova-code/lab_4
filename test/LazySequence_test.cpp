@@ -433,3 +433,33 @@ TEST_CASE("LazySequence: Добавление в начало с типом stri
     REQUIRE(new_seq.GetFirst() == "a");
     REQUIRE(new_seq.GetLast() == "c");
 }
+
+TEST_CASE("LazySequence: InsertAt в середину кеша") {
+    ArraySequence<int> data = {1, 2, 3, 4, 5};
+    LazySequence<int, ArraySequence> seq(data);
+
+    auto new_seq = seq.InsertAt(100, 2);
+    
+    REQUIRE(new_seq.GetSizeCache() == 6);
+    REQUIRE(new_seq.GetFirst() == 1);
+    REQUIRE(new_seq.Get(2) == 100);
+    REQUIRE(new_seq.GetLast() == 5);
+}
+
+TEST_CASE("LazySequence: InsertAt в начало кеша") {
+    ArraySequence<int> data = {2, 3, 4};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto new_seq = seq.InsertAt(1, 0);
+    
+    REQUIRE(new_seq.GetSizeCache() == 4);
+    REQUIRE(new_seq.GetFirst() == 1);
+    REQUIRE(new_seq.GetLast() == 4);
+}
+
+TEST_CASE("LazySequence: InsertAt с неверным индексом") {
+    ArraySequence<int> data = {1, 2, 3};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    REQUIRE_THROWS_AS(seq.InsertAt(100, 5), OutOfRangeException);
+}

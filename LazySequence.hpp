@@ -20,12 +20,14 @@ public:
     Cardinal GetSizeSequence() const;
     size_t GetSizeCache() const;
 
+    T Get(size_t index);
     T GetFirst();
     T GetLast();
     LazySequence<T, Container>* GetSubsequence(size_t start_index, size_t end_index);
 
     LazySequence<T, Container> Append(T item) const;
     LazySequence<T, Container> Prepend(T item) const;
+    LazySequence<T, Container> InsertAt(T item, size_t index) const;
 };
 
 #include "LazySequence.tpp"
