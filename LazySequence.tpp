@@ -1,6 +1,7 @@
 #include "LazySequence.hpp"
 #include "RecurrentGenerator.hpp"
 #include "CompositeGenerator.hpp"
+#include "MapGenerator.hpp"
 
 template<typename T, template<typename> class Container>
 LazySequence<T, Container>::LazySequence(): m_cache{} {}
@@ -184,4 +185,23 @@ LazySequence<T, Container> LazySequence<T, Container>::Concat(LazySequence<T, Co
     Cardinal new_length = Cardinal(GetSizeSequence().GetSize() + list.GetSizeSequence().GetSize());
     
     return LazySequence<T, Container>(new_cache, std::unique_ptr<Generator<T>>(composite));
+}
+
+template<typename T, template<typename> class Container>
+template<typename U>
+LazySequence<U, Container> LazySequence<T, Container>::Map(std::function<U(T)> func) const {
+
+    Generator<U>* map_gen;
+    
+    if (m_generator) {
+        map_gen = new MapGenerator<T, U>(m_generator->Clone(), func);
+    } else {
+        auto seq_gen = new SequenceGenerator<T, Container>(m_cache);
+        map_gen = new MapGenerator<T, U>(seq_gen, func);
+    }
+    
+    Container<U> new_cache;
+    Cardinal new_length = GetSizeSequence();
+
+    return LazySequence<U, Container>(new_cache, std::unique_ptr<Generator<U>>(map_gen));
 }

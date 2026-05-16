@@ -30,8 +30,8 @@ public:
     LazySequence<T, Container> InsertAt(T item, size_t index) const;
     
     LazySequence<T, Container> Concat(LazySequence<T, Container> &list) const; 
-    template<typename T2>
-    LazySequence<T2, Container> Map(T (*func)(T));
+    template<typename U>
+    LazySequence<U, Container> Map(std::function<U(T)> func) const;
 };
 
 #include "LazySequence.tpp"

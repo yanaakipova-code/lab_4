@@ -533,3 +533,57 @@ TEST_CASE("LazySequence: Get с материализацией") {
     REQUIRE(seq.Get(Cardinal(4)) == 3);
     REQUIRE(seq.Get(Cardinal(5)) == 4);
 }
+
+TEST_CASE("LazySequence: Map преобразует элементы") {
+    ArraySequence<int> data = {1, 2, 3, 4, 5};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto result = seq.Map<int>([](int x) { return x * 2; });
+    
+    REQUIRE(result.GetSizeSequence().GetSize() == 5);
+    REQUIRE(result.Get(Cardinal(0)) == 2);
+    REQUIRE(result.Get(Cardinal(2)) == 6);
+    REQUIRE(result.Get(Cardinal(4)) == 10);
+}
+
+TEST_CASE("LazySequence: Map с изменением типа") {
+    ArraySequence<int> data = {1, 2, 3};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto result = seq.Map<std::string>([](int x) { 
+        return "Number: " + std::to_string(x); 
+    });
+    
+    REQUIRE(result.GetSizeSequence().GetSize() == 3);
+    REQUIRE(result.Get(Cardinal(0)) == "Number: 1");
+    REQUIRE(result.Get(Cardinal(2)) == "Number: 3");
+}
+
+TEST_CASE("LazySequence: Map на бесконечной последовательности") {
+    auto naturalFunc = [](const ArraySequence<int>& cache) -> int {
+        return cache.GetLength();
+    };
+    ArraySequence<int> seed = {0};
+    LazySequence<int, ArraySequence> seq(naturalFunc, seed);
+    
+    auto result = seq.Map<int>([](int x) { return x * x; });
+
+    REQUIRE(result.GetSizeSequence().IsInfiniteNumber() == true);
+    
+    REQUIRE(result.Get(Cardinal(0)) == 0);
+    REQUIRE(result.Get(Cardinal(1)) == 1);
+    REQUIRE(result.Get(Cardinal(2)) == 4);
+    REQUIRE(result.Get(Cardinal(3)) == 9);
+    REQUIRE(result.Get(Cardinal(4)) == 16);
+    REQUIRE(result.Get(Cardinal(5)) == 25);
+}
+
+TEST_CASE("LazySequence: Map на пустой последовательности") {
+    ArraySequence<int> data;
+    LazySequence<int, ArraySequence> seq(data);
+    
+    auto result = seq.Map<int>([](int x) { return x * 2; });
+    
+    REQUIRE(result.GetSizeSequence().GetSize() == 0);
+    REQUIRE_THROWS_AS(result.Get(Cardinal(0)), OutOfRangeException);
+}
