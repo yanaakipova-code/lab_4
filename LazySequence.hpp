@@ -20,7 +20,7 @@ public:
     Cardinal GetSizeSequence() const;
     size_t GetSizeCache() const;
 
-    T Get(size_t index) const;
+    T Get(Cardinal index);
     T GetFirst();
     T GetLast();
     LazySequence<T, Container>* GetSubsequence(size_t start_index, size_t end_index);
@@ -30,11 +30,13 @@ public:
     LazySequence<T, Container> InsertAt(T item, size_t index) const;
     
     LazySequence<T, Container> Concat(LazySequence<T, Container> &list) const; 
+    template<typename T2>
+    LazySequence<T2, Container> Map(T (*func)(T));
 };
 
 #include "LazySequence.tpp"
 
 /*
-будет свой класс generator - из него берем размер  - интерфейс, от него наследуются генератор для фибоначи или конес=чных чисел
+будет свой класс generator - из него берем размер  - интерфейс, от него наследуются генератор для фибоначи или конечных чисел
 свой класс Cardinal - будет хранить либо size_t либо бесконечность 
 */

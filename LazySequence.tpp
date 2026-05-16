@@ -72,15 +72,23 @@ T LazySequence<T, Container>::GetLast() {
 }
 
 template<typename T, template<typename> class Container>
-T LazySequence<T, Container>::Get(size_t index) const{
-    if (!(GetSizeSequence().IsInfiniteNumber()) && index >= GetSizeSequence().GetSize()) {
+T LazySequence<T, Container>::Get(Cardinal index) {
+    if (index.IsInfiniteNumber()) {
+        throw OutOfRangeException("бесконечное число не может быть выдано");
+    }
+    size_t idx = index.GetSize();
+    Cardinal total_size = GetSizeSequence();
+    if (!total_size.IsInfiniteNumber() && idx >= total_size.GetSize()) {
         throw OutOfRangeException("Индекс выходит за пределы последовательности");
     }
-    if (GetSizeCache() < index){
-        throw OutOfRangeException("Этот элемент еще не инициализирован");
+    for (size_t i = GetSizeCache(); i <= idx; i++) {
+        if (!m_generator || !m_generator->HasNext()) {
+            throw OutOfRangeException("Недостаточно элементов");
+        }
+        m_cache.Append(m_generator->GetNext());
     }
-
-    return m_cache[index];
+    
+    return m_cache[idx];
 }
 
 

@@ -487,3 +487,49 @@ TEST_CASE("LazySequence: Concat с пустой последовательнос
     REQUIRE(result.GetSizeSequence().GetSize() == 3);
     REQUIRE(result.GetSizeCache() == 0);
 }
+
+TEST_CASE("LazySequence: Get с Cardinal индексом") {
+    ArraySequence<int> data = {10, 20, 30, 40, 50};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    Cardinal idx = Cardinal(2);
+    REQUIRE(seq.Get(idx) == 30);
+}
+
+TEST_CASE("LazySequence: Get с индексом 0") {
+    ArraySequence<int> data = {100};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    Cardinal idx = Cardinal(0);
+    REQUIRE(seq.Get(idx) == 100);
+}
+
+TEST_CASE("LazySequence: Get с бесконечным индексом") {
+    ArraySequence<int> data = {1, 2, 3};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    Cardinal idx = Cardinal::Omega();
+    REQUIRE_THROWS_AS(seq.Get(idx), OutOfRangeException);
+}
+
+TEST_CASE("LazySequence: Get с выходом за пределы") {
+    ArraySequence<int> data = {1, 2, 3};
+    LazySequence<int, ArraySequence> seq(data);
+    
+    Cardinal idx = Cardinal(5);
+    REQUIRE_THROWS_AS(seq.Get(idx), OutOfRangeException);
+}
+
+TEST_CASE("LazySequence: Get с материализацией") {
+    auto naturalFunc = [](const ArraySequence<int>& cache) -> int {
+        return cache.GetLength();
+    };
+    ArraySequence<int> seed = {0};
+    LazySequence<int, ArraySequence> seq(naturalFunc, seed);
+    
+    REQUIRE(seq.Get(Cardinal(1)) == 0);
+    REQUIRE(seq.Get(Cardinal(2)) == 1);
+    REQUIRE(seq.Get(Cardinal(3)) == 2);
+    REQUIRE(seq.Get(Cardinal(4)) == 3);
+    REQUIRE(seq.Get(Cardinal(5)) == 4);
+}
